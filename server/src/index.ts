@@ -1,9 +1,11 @@
+import "dotenv/config";
 import "reflect-metadata";
 import express from 'express';
 import {ApolloServer} from 'apollo-server-express';
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./UserResolver";
 import { createConnection } from "typeorm";
+
 
 (async () => {
     const app = express();
@@ -14,7 +16,8 @@ import { createConnection } from "typeorm";
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [UserResolver]
-        })
+        }),
+        context: ({req, res}) => ({req, res})
     });
 
     apolloServer.applyMiddleware({app});
