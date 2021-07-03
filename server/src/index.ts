@@ -12,10 +12,10 @@ import { createAccessToken, createRefreshToken } from "./utils/auth";
 import { sendRefreshToken } from "./utils/sendRefreshToken";
 
 
+
 (async () => {
     const app = express();
     app.use(cookieParser());
-
     app.get('/', (_req, res) => res.send("guten tag!"));
 
     // I never thought about needing to refresh access tokens and now I feel kinda dumb. I need to go back into my other projects and add this.
@@ -32,12 +32,16 @@ import { sendRefreshToken } from "./utils/sendRefreshToken";
         } catch (err) {
             return res.send({ok: false, accessToken: ''})
         }
-        // Send back an access token
         const user = await User.findOne({id: payload.userId, username: payload.username});
         if (!user) {
             return res.send({ok: false, accessToken: ""});
         }
 
+        if (user.tokenVersion !== payload.tokenVersion) {
+            return res.send({ok: false, accessToken: ""});
+        }
+        
+        // Send back an access token
         sendRefreshToken(res, createRefreshToken(user));
 
         return res.send({ok: true, accessToken: createAccessToken(user)})

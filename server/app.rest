@@ -1,9 +1,10 @@
+### Paste your cookie from the Response Header.
 POST http://localhost:4000/token_refresh
 User-Agent: rest-client
 Accept-Language: en-GB,en-US;q=0.8,en;q=0.6,zh-CN;q=0.4
-Cookie: ogedahsned=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoidG9tZm9yZCIsImlhdCI6MTYyNTMzNDAxNiwiZXhwIjoxNjI1OTM4ODE2fQ.DNPNNgSgFZJX-pfNPRSCgYHaW7wTeHWUhG8euLi6zSE
 Accept-Encoding: gzip, deflate, br
 Connection: keep-alive
 Accept: */*
 Cache-Control: no-cache
 Content-Length: 0
+Cookie: ogedahsned=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VySWQiOjIsInVzZXJuYW1lIjoidG9tZm9yZCIsInRva2VuVmVyc2lvbiI6MCwiaWF0IjoxNjI1MzM2OTUxLCJleHAiOjE2MjU5NDE3NTF9.2g76QdxlAAw_s2erV6N6ui1GiWFpZdkBTFxppP0eRu8
