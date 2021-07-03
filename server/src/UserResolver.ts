@@ -1,9 +1,10 @@
 import {Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver, UseMiddleware} from 'type-graphql';
 import {hash, compare} from 'bcryptjs';
 import { User } from './entity/User';
-import { MyContext } from '../utils/MyContext';
-import { createAccessToken, createRefreshToken } from '../utils/auth';
-import {isAuthorized} from "../Middleware/isAuthorized"
+import { MyContext } from './utils/MyContext';
+import { createAccessToken, createRefreshToken } from './utils/auth';
+import {isAuthorized} from "./Middleware/isAuthorized"
+import { sendRefreshToken } from './utils/sendRefreshToken';
 
 @ObjectType()
 class LoginResponse {
@@ -45,12 +46,7 @@ export class UserResolver {
             throw new Error ("Incorrect password please try again")
         }
 
-        res.cookie('ogedahsned', 
-            createRefreshToken(user),
-            {
-                httpOnly: true
-            }
-        );
+        sendRefreshToken(res, createRefreshToken(user));
 
         return {
             accessToken: createAccessToken(user)
