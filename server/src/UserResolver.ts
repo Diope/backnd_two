@@ -1,8 +1,9 @@
-import {Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver} from 'type-graphql';
+import {Arg, Ctx, Field, Mutation, ObjectType, Query, Resolver, UseMiddleware} from 'type-graphql';
 import {hash, compare} from 'bcryptjs';
 import { User } from './entity/User';
-import { MyContext } from './MyContext';
+import { MyContext } from '../utils/MyContext';
 import { createAccessToken, createRefreshToken } from '../utils/auth';
+import {isAuthorized} from "../Middleware/isAuthorized"
 
 @ObjectType()
 class LoginResponse {
@@ -15,6 +16,13 @@ export class UserResolver {
     hello() {
         return 'guten tag!'
     }
+
+    @Query(() => String)
+    @UseMiddleware(isAuthorized)
+    authTest(@Ctx() {payload}: MyContext) {
+        return `Your username is ${payload!.username}`
+    }
+
 
     @Query(() => [User])
     users() {

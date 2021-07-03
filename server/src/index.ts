@@ -5,14 +5,42 @@ import {ApolloServer} from 'apollo-server-express';
 import { buildSchema } from "type-graphql";
 import { UserResolver } from "./UserResolver";
 import { createConnection } from "typeorm";
+import cookieParser from "cookie-parser";
+import { verify } from "jsonwebtoken";
+import { User } from "./entity/User";
+import { createAccessToken } from "../utils/auth";
 
 
 (async () => {
     const app = express();
-    app.get('/', (_req, res) => res.send("guten tag!"))
+    app.use(cookieParser());
+
+    app.get('/', (_req, res) => res.send("guten tag!"));
+
+    // I never thought about needing to refresh access tokens and now I feel kinda dumb. I need to go back into my other projects and add this.
+
+    app.post("/token_refresh", async (req, res) => {
+        const token = req.cookies.ogedahsned
+        if (!token) {
+            return res.send({ok: false, accessToken: ''})
+        }
+
+        let payload: any;
+        try {
+            payload = verify(token, process.env.JWT_REFRESH_TOKEN!)
+        } catch (err) {
+            return res.send({ok: false, accessToken: ''})
+        }
+        // Send back an access token
+        const user = await User.findOne({id: payload.userId, username: payload.username});
+        if (!user) {
+            return res.send({ok: false, accessToken: ""});
+        }
+
+        return res.send({ok: true, accessToken: createAccessToken(user)})
+    })
 
     await createConnection()
-
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [UserResolver]
