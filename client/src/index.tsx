@@ -1,6 +1,6 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import App from './App';
+import {App} from './App';
 import {ApolloClient, InMemoryCache} from '@apollo/client';
 import reportWebVitals from './reportWebVitals';
 import { ApolloProvider } from '@apollo/react-hooks';

@@ -30,24 +30,27 @@ import { sendRefreshToken } from "./utils/sendRefreshToken";
         try {
             payload = verify(token, process.env.JWT_REFRESH_TOKEN!)
         } catch (err) {
-            return res.send({ok: false, accessToken: ''})
+            return res.status(400).json({message: "access prohibited. Please log in"});
         }
         const user = await User.findOne({id: payload.userId, username: payload.username});
         if (!user) {
-            return res.send({ok: false, accessToken: ""});
+            return res.status(400).json({message: "access prohibited. Please log in"});
         }
 
         if (user.tokenVersion !== payload.tokenVersion) {
-            return res.send({ok: false, accessToken: ""});
+            return res.status(400).json({message: "access prohibited. Please log in"});
         }
         
         // Send back an access token
         sendRefreshToken(res, createRefreshToken(user));
 
-        return res.send({ok: true, accessToken: createAccessToken(user)})
+        return res.status(200).json({accessToken: createAccessToken(user)})
     })
 
-    await createConnection()
+    await createConnection({
+        type: "postgres",
+        uuidExtension: "pgcrypto"
+    })
     const apolloServer = new ApolloServer({
         schema: await buildSchema({
             resolvers: [UserResolver]

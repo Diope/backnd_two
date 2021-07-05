@@ -6,7 +6,7 @@ import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
 export class User extends BaseEntity {
 
     @Field(() => Int)
-    @PrimaryGeneratedColumn()
+    @PrimaryGeneratedColumn("uuid")
     id: number;
 
     @Field()

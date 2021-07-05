@@ -1,23 +1,24 @@
 import React from 'react';
+import { BrowserRouter, Route, Switch } from 'react-router-dom';
 import { useHelloTestQuery } from './generated/graphql';
 
-const App: React.FC = () => {
+import {Login} from './pages/Login';
+import {Register} from './pages/Register'
 
+export const App: React.FC = () => {
   const {data, loading} = useHelloTestQuery();
 
-  if (loading || !data) {
-    return <div>loading....</div>
+  if (loading) {
+    return <div>loading...</div>
   }
 
-  return <div>{data.hello}</div>
 
-  // return (
-  //   <div className="App">
-  //     <header className="App-header">
-  //       <h1>Hello from Client</h1>
-  //     </header>
-  //   </div>
-  // );
+  return <BrowserRouter>
+    <Switch>
+      <Route exact path="/" render={() => <div>{data?.hello}</div>} />
+      <Route exact path="/login" render={Login} />
+      <Route exact path="/register" render={Register} />
+    </Switch>
+  </BrowserRouter>
 }
 
-export default App;
