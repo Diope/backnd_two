@@ -1,26 +1,39 @@
-import { Field, ObjectType, Int } from "type-graphql";
-import {Entity, PrimaryGeneratedColumn, Column, BaseEntity} from "typeorm";
+import { IsEmail, IsNotEmpty, Length, MinLength } from "class-validator";
+import { Field, ObjectType} from "type-graphql";
+import {Entity, PrimaryGeneratedColumn, Column, BaseEntity, CreateDateColumn, UpdateDateColumn, Generated} from "typeorm";
 
 @ObjectType()
 @Entity('users')
 export class User extends BaseEntity {
 
-    @Field(() => Int)
-    @PrimaryGeneratedColumn("uuid")
+    @PrimaryGeneratedColumn({type: 'bigint'})
     id: number;
 
     @Field()
-    @Column()
-    username: string;
+    @Column({type: 'varchar', unique: true })
+    @Length(3,20)
+    @IsNotEmpty()
+    username!: string;
 
     @Field()
-    @Column()
-    email: string;
+    @Column({ unique: true })
+    @IsEmail()
+    email!: string;
 
     @Column()
-    password: string;
+    @MinLength(8)
+    password!: string;
 
     @Column("int", {default: 0})
     tokenVersion: number
 
+    @CreateDateColumn()
+    createdAt: Date
+    
+    @UpdateDateColumn()
+    updatedAt: Date
+
+    @Generated('uuid')
+    @Column()
+    uuid: string
 }
