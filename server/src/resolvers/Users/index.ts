@@ -8,11 +8,11 @@ import { sendRefreshToken } from '../../utils/sendRefreshToken';
 import { getConnection } from 'typeorm';
 
 // -------------- RESPONSES ----------------//
-@ObjectType()
-class LoginResponse {
-    @Field()
-    accessToken: string
-}
+// @ObjectType()
+// class LoginResponse {
+//     @Field()
+//     accessToken: string
+// }
 
 @ObjectType()
 class UserResponse {
@@ -21,10 +21,14 @@ class UserResponse {
 
     @Field(() => User, {nullable: true})
     user?: User;
+
+    @Field(() => String, {nullable: true}) 
+    accessToken?: string
 }
 
 @InputType()
 class UsernamePasswordInput {
+
     @Field()
     username: string;
 
@@ -32,7 +36,17 @@ class UsernamePasswordInput {
     email: string;
 
     @Field()
-    password: string
+    password: string;
+}
+
+@InputType()
+class LoginInput {
+
+    @Field()
+    username: string;
+
+    @Field()
+    password: string;
 }
 
 
@@ -43,6 +57,9 @@ class FieldError {
 
     @Field()
     message: string;
+
+    @Field()
+    statusCode?: number;
 }
 
 // -------------- RESOLVERS ----------------//
@@ -69,35 +86,13 @@ export class UserResolver {
         return "Refresh tokens have been revoked";
     }
 
-    @Mutation(() => LoginResponse)
-    async login(
-        @Arg('username', () => String) username: string,
-        @Arg('password', () => String) password: string,
-        @Ctx() {res}: MyContext
-    ): Promise<LoginResponse> {
-        const user = await User.findOne({where: {username}})
-        if (!user) {
-            throw new Error (`Could not find user ${username}`)
-        }
-
-        const valid = await compare(password, user.password)
-        if (!valid) {
-            throw new Error ("Incorrect password please try again")
-        }
-
-        // Log in was successful
-        sendRefreshToken(res, createRefreshToken(user));
-
-        return {
-            accessToken: createAccessToken(user)
-        }
-    }
-
     @Mutation(() => UserResponse)
     async register(
         @Arg('options') options: UsernamePasswordInput,
         // @Ctx() {em}: MyContext
     ): Promise<UserResponse> {
+        const regex = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+
         if (options.username.length < 3 || options.username.length > 20) {
             return {
                 errors: [{
@@ -111,6 +106,15 @@ export class UserResolver {
                 errors: [{
                     field: 'password',
                     message: "Your password must have a minimum length of 8 characters"
+                }]
+            }
+        }
+        if (!regex.test(options.email)) {
+            return {
+                errors: [{
+                    field: 'email',
+                    message: "Please provide a valid email address",
+                    statusCode: 422
                 }]
             }
         }
@@ -128,14 +132,46 @@ export class UserResolver {
             if (error.code === '23505') {
                 return {
                     errors: [{
+                        statusCode: 422,
                         field: "Username",
                         message: `The username '${options.username}' is already in use. Please choose another username.`
                     }]
                 }
             }
         }
-        console.log(user)
 
         return {user}
+    }
+
+    @Mutation(() => UserResponse)
+    async login(
+        @Arg('options') options: LoginInput,
+        @Ctx() {res}: MyContext
+    ): Promise<UserResponse> {
+        const user = await User.findOne({where: {username: options.username} })
+        if (!user) {
+            return {
+                errors: [{
+                    statusCode: 422,
+                    field: 'username',
+                    message: `The user ${options.username} cannot be found, please check the spelling and try again.`
+                }]
+            }
+        }
+
+        const valid = await compare(options.password, user.password)
+        if (!valid) {
+            return {
+                errors: [{
+                    statusCode: 422,
+                    field: "password",
+                    message: "The provided password is incorrect, please try again."
+                }]
+            }
+        }
+        sendRefreshToken(res, createRefreshToken(user));
+
+        return {accessToken: createAccessToken(user)};
+        
     }
 }
