@@ -32,22 +32,22 @@ class UsernamePasswordInput {
     @Field()
     username: string;
 
-    @Field()
+    @Field(() => String, {nullable: true})
     email: string;
 
     @Field()
     password: string;
 }
 
-@InputType()
-class LoginInput {
+// @InputType()
+// class LoginInput {
 
-    @Field()
-    username: string;
+//     @Field()
+//     username: string;
 
-    @Field()
-    password: string;
-}
+//     @Field()
+//     password: string;
+// }
 
 
 @ObjectType()
@@ -145,7 +145,7 @@ export class UserResolver {
 
     @Mutation(() => UserResponse)
     async login(
-        @Arg('options') options: LoginInput,
+        @Arg('options') options: UsernamePasswordInput,
         @Ctx() {res}: MyContext
     ): Promise<UserResponse> {
         const user = await User.findOne({where: {username: options.username} })
