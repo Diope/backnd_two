@@ -26,6 +26,15 @@ class UserResponse {
     accessToken?: string
 }
 
+@ObjectType()
+class RegisterResponse {
+    @Field(() => [FieldError], {nullable: true})
+    errors?: FieldError[]
+
+    @Field(() => User, {nullable: true})
+    user?: User;
+}
+
 @InputType()
 class UsernamePasswordInput {
 
@@ -86,11 +95,11 @@ export class UserResolver {
         return "Refresh tokens have been revoked";
     }
 
-    @Mutation(() => UserResponse)
+    @Mutation(() => RegisterResponse)
     async register(
         @Arg('options') options: UsernamePasswordInput,
         // @Ctx() {em}: MyContext
-    ): Promise<UserResponse> {
+    ): Promise<RegisterResponse> {
         const regex = new RegExp(/^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
 
         if (options.username.length < 3 || options.username.length > 20) {
@@ -139,7 +148,6 @@ export class UserResolver {
                 }
             }
         }
-
         return {user}
     }
 
@@ -172,6 +180,5 @@ export class UserResolver {
         sendRefreshToken(res, createRefreshToken(user));
 
         return {accessToken: createAccessToken(user)};
-        
     }
 }

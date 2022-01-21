@@ -11,7 +11,7 @@ export class User extends BaseEntity {
 
     @Field()
     @Column({type: 'varchar', unique: true })
-    @Length(3,20)
+    @Length(3,30)
     @IsNotEmpty()
     username!: string;
 

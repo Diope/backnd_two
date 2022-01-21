@@ -13,7 +13,8 @@ export const isAuthorized: Middleware<MyContext> = ({context}, next) => {
     try {
         // console.log(authorization.split(' '));
         const token = authorization.split(' ')[1];  // bearer
-        context.payload = verify(token, process.env.JWT_ACCESS_TOKEN!) as any;
+        let payload = verify(token, process.env.JWT_ACCESS_TOKEN!) as any;
+        context.payload = payload;
     
     } catch (err) {
         console.log(err)

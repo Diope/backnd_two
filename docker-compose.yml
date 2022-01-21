@@ -1,0 +1,15 @@
+version: "3.7"
+services:
+    server:
+      hostname: db
+      image: postgres:10.17-alpine
+      restart: always
+      environment:
+        POSTGRES_PASSWORD: postgres
+        POSTGRES_USER: postgres
+        POSTGRES_DB: backnd_two
+      volumes:
+        - ./pgdata:/var/lib/postgresql/data
+      ports:
+        - '5432:5432'
+

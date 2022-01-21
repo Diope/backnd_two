@@ -1,10 +1,10 @@
 // import { config } from "config/config";
 import { sign } from "jsonwebtoken";
-import { User } from "src/entity/User";
-import {configConstants} from '../../config/config'
+import { User } from "../entity/User";
+import {configConstants} from '../config/config'
 
 export const createAccessToken = (user: User) => {
-    return sign({userId: user.id, username: user.username}, configConstants.jwtAccess, {expiresIn: '10m'});
+    return sign({userId: user.id, username: user.username}, configConstants.jwtAccess, {expiresIn: '60m'});
 }
 
 export const createRefreshToken = (user: User) => {
