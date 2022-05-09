@@ -10,5 +10,5 @@ I'm updating my little backend workhorse [backnd](https://github.com/diope/backn
 
 ### Note:
 
-If you stumble upon this repo and decide to use it for your own reasons. Open your `ormconfig.json` file and change the user to your postgres default user (if you have never configured your postgres install, the default user is 'postgres'). Then run `yarn upgrade-interactive --latest` just to make sure everything is up to date. Lastly run `yarn start` to make sure it can connect to your DB.
+If you stumble upon this repo and decide to use it for your own reasons. Open your `ormconfig.json` file and change the user to your postgres default user (if you have never configured your postgres install, the default user is 'postgres'). Then run `yarn upgrade-interactive --latest` just to make sure everything is up to date. Lastly run `yarn start` to make sure it can connect to the DB. Run `docker compose up` to create a postgres container
 
